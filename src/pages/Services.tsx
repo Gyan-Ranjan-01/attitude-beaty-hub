@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Scissors, Sparkles, Heart, Hand, Flower } from 'lucide-react';
+import { Scissors, Sparkles, Heart, Hand, Flower, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Service {
@@ -21,8 +21,133 @@ const categoryIcons: { [key: string]: any } = {
   Makeup: Sparkles,
 };
 
+const fallbackServices: Service[] = [
+  {
+    id: 'hair-1',
+    name: 'Silk Press & Gloss Finish',
+    category: 'Hair',
+    description: 'Steam hydration, precision press, and mirror-gloss finishing ritual.',
+    price_start: 1800,
+    is_featured: true,
+  },
+  {
+    id: 'hair-2',
+    name: 'Crown Volume Blowout',
+    category: 'Hair',
+    description: 'Weightless volume, soft curls, and humidity shield for lasting bounce.',
+    price_start: 1600,
+    is_featured: false,
+  },
+  {
+    id: 'skin-1',
+    name: 'Rose Quartz Radiance Facial',
+    category: 'Skin',
+    description: 'Crystal-infused cleanse, oxygen boost mask, and sculpting massage.',
+    price_start: 2400,
+    is_featured: true,
+  },
+  {
+    id: 'skin-2',
+    name: 'Glass Skin Hydro Infusion',
+    category: 'Skin',
+    description: 'Deep hydration layering with gel masks and cooling globe sculpt.',
+    price_start: 2800,
+    is_featured: false,
+  },
+  {
+    id: 'bridal-1',
+    name: 'Bridal Sculpt & Stay',
+    category: 'Bridal',
+    description: 'Full bridal glam with waterproof artistry and veil-ready finish.',
+    price_start: 8500,
+    is_featured: true,
+  },
+  {
+    id: 'bridal-2',
+    name: 'Pre-Bridal Glow Prep',
+    category: 'Bridal',
+    description: 'Four-session glow plan with skin polish, hair spa, and trial look.',
+    price_start: 12000,
+    is_featured: false,
+  },
+  {
+    id: 'nails-1',
+    name: 'Velvet Gel Manicure',
+    category: 'Nails',
+    description: 'Cuticle perfection, gel application, and glossy top coat.',
+    price_start: 900,
+    is_featured: false,
+  },
+  {
+    id: 'nails-2',
+    name: 'Rose Garden Mani-Pedi',
+    category: 'Nails',
+    description: 'Soak, scrub, rose balm massage, and color finish.',
+    price_start: 1700,
+    is_featured: true,
+  },
+  {
+    id: 'spa-1',
+    name: 'Zenstone Body Polish',
+    category: 'Spa',
+    description: 'Warm oil exfoliation and silk buffing for velvet skin.',
+    price_start: 3200,
+    is_featured: false,
+  },
+  {
+    id: 'spa-2',
+    name: 'Aroma Reset Massage',
+    category: 'Spa',
+    description: 'Signature aromatherapy massage for deep relaxation.',
+    price_start: 2800,
+    is_featured: false,
+  },
+  {
+    id: 'makeup-1',
+    name: 'Soft Glam Event Makeup',
+    category: 'Makeup',
+    description: 'Luminous base, feathered lashes, and customized lip tone.',
+    price_start: 3500,
+    is_featured: true,
+  },
+  {
+    id: 'makeup-2',
+    name: 'Editorial Glam Suite',
+    category: 'Makeup',
+    description: 'Statement eyes, contour mapping, and custom gloss layering.',
+    price_start: 4200,
+    is_featured: false,
+  },
+];
+
+const packages = [
+  {
+    name: 'Glow Starter',
+    price: '₹4,900',
+    detail: 'Hydro facial + velvet mani + signature blowout',
+  },
+  {
+    name: 'Weekend Deluxe',
+    price: '₹7,800',
+    detail: 'Glass skin facial + crown volume + gel mani-pedi',
+  },
+  {
+    name: 'Bridal Halo',
+    price: '₹24,000',
+    detail: 'Pre-bridal plan + bridal glam + touch-up kit',
+  },
+];
+
+const addOns = [
+  'Collagen eye lift (15 min) — ₹600',
+  'Scalp detox ritual — ₹750',
+  'Brow sculpt & tint — ₹550',
+  'Hydra lip mask — ₹400',
+  'Luxury lash set — ₹950',
+];
+
 export default function Services() {
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<Service[]>(fallbackServices);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   useEffect(() => {
@@ -34,7 +159,7 @@ export default function Services() {
       .from('services')
       .select('*')
       .order('category');
-    if (data) setServices(data);
+    if (data && data.length > 0) setServices(data);
   };
 
   const categories = ['All', ...Array.from(new Set(services.map(s => s.category)))];
@@ -136,6 +261,76 @@ export default function Services() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Signature Packages</h2>
+            <p className="text-gray-600">Curated bundles for glow-ups, events, and bridal milestones.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {packages.map((pack) => (
+              <div key={pack.name} className="border border-rose-200 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
+                    <Star className="text-rose-600" size={18} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">{pack.name}</h3>
+                </div>
+                <p className="text-gray-600 mb-6">{pack.detail}</p>
+                <div className="text-2xl font-bold text-rose-600 mb-6">{pack.price}</div>
+                <Link
+                  to="/book"
+                  className="inline-flex items-center justify-center bg-rose-600 text-white px-6 py-2 rounded-full hover:bg-rose-700 transition-colors text-sm font-semibold"
+                >
+                  Reserve Package
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Luxury Add-Ons</h3>
+              <p className="text-gray-600 mb-6">
+                Elevate any service with these instant-upgrade rituals.
+              </p>
+              <ul className="space-y-3 text-gray-700">
+                {addOns.map((item) => (
+                  <li key={item} className="flex items-center gap-3">
+                    <span className="w-2 h-2 bg-rose-500 rounded-full" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-gradient-to-br from-rose-600 to-pink-600 rounded-2xl p-8 text-white">
+              <h3 className="text-2xl font-bold mb-4">Our Service Promise</h3>
+              <p className="mb-6 text-rose-100">
+                We create a premium experience by using clean tools, curated products, and personalized
+                consultations every single visit.
+              </p>
+              <div className="space-y-4">
+                {[
+                  'Custom consultation + mood board',
+                  'Premium sanitization for every station',
+                  'Touch-up kit for bridal + event clients',
+                  'Aftercare notes for long-lasting results',
+                ].map((promise) => (
+                  <div key={promise} className="flex items-center gap-3">
+                    <span className="w-2 h-2 bg-white rounded-full" />
+                    <span>{promise}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

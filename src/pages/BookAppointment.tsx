@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, Calendar, Clock, User, Phone, Mail, MessageCircle } from 'lucide-react';
+import { Check, Calendar, Clock, User, Phone, Mail, MessageCircle, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Service {
@@ -9,9 +9,49 @@ interface Service {
   price_start: number;
 }
 
+const fallbackServices: Service[] = [
+  {
+    id: 'bk-1',
+    name: 'Rose Quartz Radiance Facial',
+    category: 'Skin',
+    price_start: 2400,
+  },
+  {
+    id: 'bk-2',
+    name: 'Silk Press & Gloss Finish',
+    category: 'Hair',
+    price_start: 1800,
+  },
+  {
+    id: 'bk-3',
+    name: 'Soft Glam Event Makeup',
+    category: 'Makeup',
+    price_start: 3500,
+  },
+  {
+    id: 'bk-4',
+    name: 'Rose Garden Mani-Pedi',
+    category: 'Nails',
+    price_start: 1700,
+  },
+  {
+    id: 'bk-5',
+    name: 'Zenstone Body Polish',
+    category: 'Spa',
+    price_start: 3200,
+  },
+];
+
+const prepNotes = [
+  'Arrive 10 minutes early for a quick consultation.',
+  'Let us know about any skin sensitivities or allergies.',
+  'Bring reference photos for bridal or event looks.',
+  'Choose add-ons at the studio for a custom glow-up.',
+];
+
 export default function BookAppointment() {
   const [step, setStep] = useState(1);
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<Service[]>(fallbackServices);
   const [formData, setFormData] = useState({
     serviceId: '',
     date: '',
@@ -32,7 +72,7 @@ export default function BookAppointment() {
       .from('services')
       .select('*')
       .order('category');
-    if (data) setServices(data);
+    if (data && data.length > 0) setServices(data);
   };
 
   const timeSlots = [
@@ -117,214 +157,237 @@ export default function BookAppointment() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-rose-600 to-pink-600 p-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">Book Your Appointment</h1>
-            <p className="text-rose-100">Complete the steps below to schedule your visit</p>
-          </div>
-
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-8">
-              {[1, 2, 3].map((s) => (
-                <div key={s} className="flex items-center flex-1">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                      step >= s
-                        ? 'bg-rose-600 text-white'
-                        : 'bg-gray-200 text-gray-500'
-                    }`}
-                  >
-                    {s}
-                  </div>
-                  {s < 3 && (
-                    <div
-                      className={`flex-1 h-1 mx-2 ${
-                        step > s ? 'bg-rose-600' : 'bg-gray-200'
-                      }`}
-                    />
-                  )}
-                </div>
-              ))}
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-r from-rose-600 to-pink-600 p-6 text-white">
+              <h1 className="text-3xl font-bold mb-2">Book Your Appointment</h1>
+              <p className="text-rose-100">Complete the steps below to schedule your visit</p>
             </div>
 
-            {step === 1 && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <User className="text-rose-600" />
-                  Select Service
-                </h2>
-                <div className="space-y-3">
-                  {services.map((service) => (
-                    <label
-                      key={service.id}
-                      className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        formData.serviceId === service.id
-                          ? 'border-rose-600 bg-rose-50'
-                          : 'border-gray-200 hover:border-rose-300'
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-8">
+                {[1, 2, 3].map((s) => (
+                  <div key={s} className="flex items-center flex-1">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
+                        step >= s
+                          ? 'bg-rose-600 text-white'
+                          : 'bg-gray-200 text-gray-500'
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="service"
-                        value={service.id}
-                        checked={formData.serviceId === service.id}
-                        onChange={(e) =>
-                          setFormData({ ...formData, serviceId: e.target.value })
-                        }
-                        className="sr-only"
+                      {s}
+                    </div>
+                    {s < 3 && (
+                      <div
+                        className={`flex-1 h-1 mx-2 ${
+                          step > s ? 'bg-rose-600' : 'bg-gray-200'
+                        }`}
                       />
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-semibold text-gray-900">{service.name}</div>
-                          <div className="text-sm text-gray-500">{service.category}</div>
-                        </div>
-                        <div className="text-rose-600 font-semibold">
-                          ₹{service.price_start.toLocaleString()}+
-                        </div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Calendar className="text-rose-600" />
-                  Select Date & Time
-                </h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) =>
-                        setFormData({ ...formData, date: e.target.value })
-                      }
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
-                    />
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Time
-                    </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                      {timeSlots.map((time) => (
-                        <button
-                          key={time}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, time })}
-                          className={`p-3 rounded-lg font-medium transition-all ${
-                            formData.time === time
-                              ? 'bg-rose-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {time}
-                        </button>
-                      ))}
+                ))}
+              </div>
+
+              {step === 1 && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <User className="text-rose-600" />
+                    Select Service
+                  </h2>
+                  <div className="space-y-3">
+                    {services.map((service) => (
+                      <label
+                        key={service.id}
+                        className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          formData.serviceId === service.id
+                            ? 'border-rose-600 bg-rose-50'
+                            : 'border-gray-200 hover:border-rose-300'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="service"
+                          value={service.id}
+                          checked={formData.serviceId === service.id}
+                          onChange={(e) =>
+                            setFormData({ ...formData, serviceId: e.target.value })
+                          }
+                          className="sr-only"
+                        />
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-semibold text-gray-900">{service.name}</div>
+                            <div className="text-sm text-gray-500">{service.category}</div>
+                          </div>
+                          <div className="text-rose-600 font-semibold">
+                            ₹{service.price_start.toLocaleString()}+
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Calendar className="text-rose-600" />
+                    Select Date & Time
+                  </h2>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Date
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Time
+                      </label>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                        {timeSlots.map((time) => (
+                          <button
+                            key={time}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, time })}
+                            className={`p-3 rounded-lg font-medium transition-all ${
+                              formData.time === time
+                                ? 'bg-rose-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {time}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {step === 3 && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Phone className="text-rose-600" />
-                  Contact Details
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
-                      placeholder="+91 98765 43210"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email (Optional)
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
-                      placeholder="your@email.com"
-                    />
+              {step === 3 && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Phone className="text-rose-600" />
+                    Contact Details
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email (Optional)
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-rose-600 focus:outline-none"
+                        placeholder="your@email.com"
+                      />
+                    </div>
                   </div>
                 </div>
+              )}
+
+              <div className="flex gap-4 mt-8">
+                {step > 1 && (
+                  <button
+                    onClick={() => setStep(step - 1)}
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Back
+                  </button>
+                )}
+                {step < 3 ? (
+                  <button
+                    onClick={() => setStep(step + 1)}
+                    disabled={!canProceed()}
+                    className="flex-1 px-6 py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={!canProceed() || isSubmitting}
+                    className="flex-1 px-6 py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Booking...' : 'Confirm Booking'}
+                  </button>
+                )}
               </div>
-            )}
 
-            <div className="flex gap-4 mt-8">
-              {step > 1 && (
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600 mb-3">Or book directly via WhatsApp</p>
+                <a
+                  href="https://wa.me/919876543210"
+                  className="inline-flex items-center gap-2 text-green-600 font-medium hover:text-green-700"
                 >
-                  Back
-                </button>
-              )}
-              {step < 3 ? (
-                <button
-                  onClick={() => setStep(step + 1)}
-                  disabled={!canProceed()}
-                  className="flex-1 px-6 py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  Continue
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  disabled={!canProceed() || isSubmitting}
-                  className="flex-1 px-6 py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Booking...' : 'Confirm Booking'}
-                </button>
-              )}
+                  <MessageCircle size={18} />
+                  Chat with us on WhatsApp
+                </a>
+              </div>
             </div>
+          </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 mb-3">Or book directly via WhatsApp</p>
-              <a
-                href="https://wa.me/919876543210"
-                className="inline-flex items-center gap-2 text-green-600 font-medium hover:text-green-700"
-              >
-                <MessageCircle size={18} />
-                Chat with us on WhatsApp
-              </a>
+          <div className="bg-white rounded-2xl shadow-lg p-6 h-fit">
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="text-rose-600" size={20} />
+              <h3 className="text-xl font-semibold text-gray-900">Before You Arrive</h3>
+            </div>
+            <p className="text-gray-600 mb-4">
+              We personalize every appointment. Here are a few ways to get the most from your visit.
+            </p>
+            <ul className="space-y-3 text-gray-700 text-sm">
+              {prepNotes.map((note) => (
+                <li key={note} className="flex gap-3">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 mt-2" />
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 bg-rose-50 rounded-xl p-4 text-sm text-gray-600">
+              Need a last-minute slot? Call us at <span className="font-semibold text-gray-900">+91 98765 43210</span> and we will try to fit you in.
             </div>
           </div>
         </div>

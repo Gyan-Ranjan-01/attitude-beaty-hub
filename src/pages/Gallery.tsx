@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Sparkles, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface GalleryImage {
@@ -10,8 +10,72 @@ interface GalleryImage {
   display_order: number;
 }
 
+const fallbackImages: GalleryImage[] = [
+  {
+    id: 'fg-1',
+    category: 'Bridal',
+    image_url: 'https://images.pexels.com/photos/247287/pexels-photo-247287.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Bridal glam close-up with jeweled accents',
+    display_order: 1,
+  },
+  {
+    id: 'fg-2',
+    category: 'Hair',
+    image_url: 'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Smooth blowout with soft curls',
+    display_order: 2,
+  },
+  {
+    id: 'fg-3',
+    category: 'Skin',
+    image_url: 'https://images.pexels.com/photos/3997393/pexels-photo-3997393.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Radiant facial treatment moment',
+    display_order: 3,
+  },
+  {
+    id: 'fg-4',
+    category: 'Makeup',
+    image_url: 'https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Luminous soft glam makeup',
+    display_order: 4,
+  },
+  {
+    id: 'fg-5',
+    category: 'Nails',
+    image_url: 'https://images.pexels.com/photos/3997385/pexels-photo-3997385.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Minimal manicure with glossy finish',
+    display_order: 5,
+  },
+  {
+    id: 'fg-6',
+    category: 'Spa',
+    image_url: 'https://images.pexels.com/photos/6621461/pexels-photo-6621461.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt_text: 'Relaxing spa ambience and aromatherapy',
+    display_order: 6,
+  },
+];
+
+const moodboard = [
+  {
+    title: 'Soft Glam Stories',
+    detail: 'Neutral palettes, pearl glow, and airy lash mapping.',
+  },
+  {
+    title: 'Modern Bridal Luxe',
+    detail: 'Veil-ready finish with crystal highlight zones.',
+  },
+  {
+    title: 'Hair Gloss Era',
+    detail: 'Mirror shine and volume-focused styling.',
+  },
+  {
+    title: 'Skin First Rituals',
+    detail: 'Hydration layering with sculpting massage.',
+  },
+];
+
 export default function Gallery() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [images, setImages] = useState<GalleryImage[]>(fallbackImages);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
@@ -24,7 +88,7 @@ export default function Gallery() {
       .from('gallery_images')
       .select('*')
       .order('display_order');
-    if (data) setImages(data);
+    if (data && data.length > 0) setImages(data);
   };
 
   const categories = ['All', ...Array.from(new Set(images.map(img => img.category)))];
@@ -49,8 +113,20 @@ export default function Gallery() {
         </div>
       </section>
 
-      <section className="py-12">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            {moodboard.map((item) => (
+              <div key={item.title} className="bg-white rounded-2xl p-6 shadow-sm border border-rose-100">
+                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center mb-4">
+                  <Sparkles className="text-rose-600" size={18} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-sm text-gray-600">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="flex flex-wrap justify-center gap-3 mb-8">
             {categories.map((category) => (
               <button
@@ -94,6 +170,27 @@ export default function Gallery() {
               <p className="text-gray-500 text-lg">No images found in this category.</p>
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-3 bg-rose-50 text-rose-600 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <Camera size={18} />
+            Studio Moments & Editorial Frames
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Every look is a story
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Our gallery celebrates custom artistry, from pre-bridal glow journeys to polished everyday glam. Snap your look, tag us, and join our spotlight wall.
+          </p>
+          <a
+            href="https://instagram.com"
+            className="inline-flex items-center justify-center bg-rose-600 text-white px-8 py-3 rounded-full hover:bg-rose-700 transition-colors font-semibold"
+          >
+            Follow the Lookbook
+          </a>
         </div>
       </section>
 
