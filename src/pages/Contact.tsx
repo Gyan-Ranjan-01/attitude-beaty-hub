@@ -1,5 +1,30 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, MessageCircle, Calendar } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Calendar, Sparkles, Car, Train, Coffee } from 'lucide-react';
+
+const travelTips = [
+  {
+    title: 'Metro & Bus',
+    detail: 'Closest stops: Central Metro Gate 3 + Bowbazar Bus Stand.',
+    icon: Train,
+  },
+  {
+    title: 'Parking',
+    detail: 'Valet-style drop zone with secure parking (limited slots).',
+    icon: Car,
+  },
+  {
+    title: 'Refreshments',
+    detail: 'Herbal teas, rose latte, and citrus water on arrival.',
+    icon: Coffee,
+  },
+];
+
+const studioHighlights = [
+  'Private bridal suite with vanity lighting',
+  'Photo-ready mirrors and content corners',
+  'Aroma diffusers + calming playlists',
+  'Hygiene-certified tools for every station',
+];
 
 export default function Contact() {
   return (
@@ -32,7 +57,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
                     <p className="text-gray-600">
-                      Bowbazar<br />
+                      18A Bowbazar Street<br />
                       Kolkata, West Bengal<br />
                       India - 700012
                     </p>
@@ -61,10 +86,10 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <a
-                      href="mailto:info@attitudebeautyhub.com"
+                      href="mailto:hello@attitudebeautyhub.com"
                       className="text-gray-600 hover:text-rose-600"
                     >
-                      info@attitudebeautyhub.com
+                      hello@attitudebeautyhub.com
                     </a>
                   </div>
                 </div>
@@ -76,14 +101,14 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
                     <div className="text-gray-600">
-                      <p>Monday - Saturday: 10:00 AM - 8:00 PM</p>
-                      <p className="text-rose-600 font-medium">Sunday: Closed</p>
+                      <p>Monday - Saturday: 9:30 AM - 9:00 PM</p>
+                      <p className="text-rose-600 font-medium">Sunday: By Appointment</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-lg">
+              <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-lg mb-8">
                 <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div className="space-y-3">
                   <Link
@@ -109,11 +134,26 @@ export default function Contact() {
                   </a>
                 </div>
               </div>
+
+              <div className="bg-white border border-rose-100 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <Sparkles className="text-rose-600" size={20} />
+                  <h3 className="font-semibold text-gray-900">Studio Highlights</h3>
+                </div>
+                <ul className="space-y-2 text-gray-600">
+                  {studioHighlights.map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <span className="w-2 h-2 bg-rose-500 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-8">Find Us</h2>
-              <div className="bg-gray-100 rounded-lg overflow-hidden shadow-lg h-[600px]">
+              <div className="bg-gray-100 rounded-lg overflow-hidden shadow-lg h-[420px] mb-8">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.0977891820805!2d88.36313931495726!3d22.572645785180894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0277a6b6f0e899%3A0x5c6f7f7f7f7f7f7f!2sBowbazar%2C%20Kolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1634567890123!5m2!1sen!2sin"
                   width="100%"
@@ -124,6 +164,20 @@ export default function Contact() {
                   referrerPolicy="no-referrer-when-downgrade"
                   title="Attitude Beauty Hub Location"
                 />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {travelTips.map((tip) => {
+                  const Icon = tip.icon;
+                  return (
+                    <div key={tip.title} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center mb-3">
+                        <Icon className="text-rose-600" size={18} />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">{tip.title}</h3>
+                      <p className="text-sm text-gray-600">{tip.detail}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
